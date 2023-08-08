@@ -16,7 +16,9 @@ build:
 
 sign:
   stage: sign
-  image: gcr.io/projectsigstore/cosign:latest
+  image:
+    name: gcr.io/projectsigstore/cosign:latest
+    entrypoint: [""]
   script:
     - cosign sign -y --key $COSIGN_PRIVATE_KEY $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - cosign sign -y --key $COSIGN_PRIVATE_KEY $CI_REGISTRY_IMAGE:latest
