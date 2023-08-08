@@ -9,6 +9,6 @@ build:
     - echo "$CI_REGISTRY_PASSWORD" | buildah login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - buildah pull $CI_REGISTRY_IMAGE:latest || true
-    - buildah build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - buildah build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest --cache-from $CI_REGISTRY_IMAGE .
     - buildah push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - buildah push $CI_REGISTRY_IMAGE:latest
