@@ -1,9 +1,8 @@
-image: fedora:latest
-
 stages:
   - build
 
 build:
   stage: build
+  image: quay.io/containers/buildah:latest
   script:
     - buildah build -t os
