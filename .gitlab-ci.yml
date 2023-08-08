@@ -1,5 +1,6 @@
 stages:
   - build
+  - sign
 
 build:
   stage: build
@@ -12,3 +13,10 @@ build:
     - buildah build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest --cache-from $CI_REGISTRY_IMAGE .
     - buildah push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - buildah push $CI_REGISTRY_IMAGE:latest
+
+sign:
+  stage: sign
+  image: gcr.io/projectsigstore/cosign:latest
+  script:
+    - cosign sign -y --key $COSIGN_PRIVATE_KEY $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - cosign sign -y --key $COSIGN_PRIVATE_KEY $CI_REGISTRY_IMAGE:latest
