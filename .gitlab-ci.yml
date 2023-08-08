@@ -1,0 +1,9 @@
+image: fedora:latest
+
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - buildah build -t os
