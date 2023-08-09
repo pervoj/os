@@ -1,25 +1,25 @@
-image: quay.io/containers/podman:latest
-
 stages:
   - build
   - sign
 
 build:
   stage: build
+  image: quay.io/containers/buildah:latest
   before_script:
     # Login to the container registry.
-    - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - buildah login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     # Build the image.
-    - podman build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - buildah build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
     # Push the image to the container registry.
-    - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - podman push $CI_REGISTRY_IMAGE:latest
+    - buildah push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - buildah push $CI_REGISTRY_IMAGE:latest
 
 sign:
   stage: sign
   dependencies:
     - build
+  image: quay.io/containers/podman:latest
   before_script:
     # Install Cosign.
     - COSIGN_VERSION=$(curl -s https://api.github.com/repos/sigstore/cosign/releases/latest | grep tag_name | cut -d ":" -f2 | tr -d "v\", ")
