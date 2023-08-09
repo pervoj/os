@@ -1,24 +1,28 @@
+image: alpine:latest
+
+before_script:
+  - apk add --update podman buildah cosign
+  - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
 stages:
   - build
+  - push
   - sign
 
 build:
   stage: build
-  image: quay.io/containers/buildah:latest
-  before_script:
-    - export REGISTRY_AUTH_FILE=$HOME/auth.json
-    - echo "$CI_REGISTRY_PASSWORD" | buildah login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - buildah pull $CI_REGISTRY_IMAGE:latest || true
     - buildah build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest --cache-from $CI_REGISTRY_IMAGE .
-    - buildah push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - buildah push $CI_REGISTRY_IMAGE:latest
+
+push:
+  stage: push
+  script:
+    - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - podman push $CI_REGISTRY_IMAGE:latest
 
 sign:
   stage: sign
-  image:
-    name: gcr.io/projectsigstore/cosign:latest
-    entrypoint: [""]
   script:
-    - cosign sign -y --key $COSIGN_PRIVATE_KEY $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - cosign sign -y --key $COSIGN_PRIVATE_KEY $CI_REGISTRY_IMAGE:latest
+    - IMAGE_DIGEST=$(podman inspect --format='{{index .RepoDigests 0}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA)
+    - cosign sign -y --key $COSIGN_PRIVATE_KEY $IMAGE_DIGEST
