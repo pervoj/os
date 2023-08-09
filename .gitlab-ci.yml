@@ -20,12 +20,16 @@ build:
 
 push:
   stage: push
+  dependencies:
+    - build
   script:
     - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - podman push $CI_REGISTRY_IMAGE:latest
 
 sign:
   stage: sign
+  dependencies:
+    - push
   script:
     - IMAGE_DIGEST=$(podman inspect --format='{{index .RepoDigests 0}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA)
     - cosign sign -y --key $COSIGN_PRIVATE_KEY $IMAGE_DIGEST
