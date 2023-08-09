@@ -16,8 +16,7 @@ stages:
 build:
   stage: build
   script:
-    - buildah pull $CI_REGISTRY_IMAGE:latest || true
-    - buildah build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest --cache-from $CI_REGISTRY_IMAGE .
+    - buildah build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
 
 push:
   stage: push
