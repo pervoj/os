@@ -11,8 +11,7 @@ stages:
 build:
   stage: build
   script:
-    - podman pull $CI_REGISTRY_IMAGE:latest || true
-    - podman build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest --cache-from $CI_REGISTRY_IMAGE .
+    - podman build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
     - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - podman push $CI_REGISTRY_IMAGE:latest
 
