@@ -1,5 +1,9 @@
 image: alpine:latest
 
+variables:
+  STORAGE_DRIVER: vfs
+  BUILDAH_ISOLATION: chroot
+
 before_script:
   - apk add --update podman buildah cosign
   - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
