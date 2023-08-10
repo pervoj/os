@@ -8,9 +8,10 @@ packages:
   image: registry.fedoraproject.org/fedora:latest
   script:
     - sh packages/build.sh
+    - mv output built-packages
   artifacts:
     paths:
-      - output/
+      - built-packages
 
 build:
   stage: build
