@@ -6,8 +6,13 @@ set -oue pipefail
 SCRIPT_PATH=$(realpath "$0")
 PACKAGES_DIR=$(dirname "$SCRIPT_PATH")
 
+EXEC="./build.sh"
+if [[ -n "$1" ]]; then
+  EXEC="./scripts/build-package.sh recipes/$1"
+fi
+
 podman run --rm --privileged \
   -v $PACKAGES_DIR:/tmp/packages \
   -w /tmp/packages \
   registry.fedoraproject.org/fedora:latest \
-  ./build.sh
+  $EXEC
