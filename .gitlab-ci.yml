@@ -1,9 +1,21 @@
 stages:
+  - packages
   - build
   - sign
 
+packages:
+  stage: packages
+  image: registry.fedoraproject.org/fedora:latest
+  script:
+    - sh packages/build.sh
+  artifacts:
+    paths:
+      - output/
+
 build:
   stage: build
+  dependencies:
+    - packages
   image: quay.io/containers/buildah:latest
   before_script:
     # Login to the container registry.
