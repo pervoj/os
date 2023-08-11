@@ -10,7 +10,7 @@ packages:
     OUTPUT_DIR: /tmp/built-packages
   script:
     - sh packages/build.sh
-    - cp /tmp/built-packages/* files
+    - cp -r /tmp/built-packages/* files
   artifacts:
     untracked: true
 
