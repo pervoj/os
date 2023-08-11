@@ -80,4 +80,6 @@ run_function_if_exists "install"
 # Move to previous PWD.
 cd $_CURRENT_PWD
 
+rm -rf $BUILD_DIR
+
 info "\n--- END BUILDING PACKAGE ($RECIPE_NAME) ---\n"
