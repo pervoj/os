@@ -1,6 +1,6 @@
 ARG FEDORA_MAJOR_VERSION=38
 
-FROM quay.io/fedora-ostree-desktops/base:${FEDORA_MAJOR_VERSION}
+FROM quay.io/fedora-ostree-desktops/silverblue:${FEDORA_MAJOR_VERSION}
 
 # Copy the files.
 COPY files /
