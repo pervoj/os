@@ -9,7 +9,7 @@ PACKAGES_DIR=$(dirname "$SCRIPT_PATH")
 
 # If specified, build a specific package. Otherwise build all packages.
 EXEC="./build.sh"
-if [[ -n "$1" ]]; then
+if [[ -v 1 ]]; then
   EXEC="./scripts/build-package.sh recipes/$1"
 fi
 
