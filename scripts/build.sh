@@ -10,3 +10,6 @@ find $SCRIPT_DIR -type f -name "*.sh" -exec chmod +x {} \;
 
 # Install/remove rpm packages.
 $SCRIPT_DIR/rpms.sh
+
+# Setup default prompt.
+$SCRIPT_DIR/prompt.sh
