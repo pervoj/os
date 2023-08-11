@@ -13,6 +13,15 @@ readonly PREFIX=${PREFIX:-"/usr"}
 RECIPE_NAME=$(basename $RECIPE)
 readonly RECIPE_NAME=${RECIPE_NAME%.*}
 
+readonly PKG_WORK_DIR=$WORK_DIR/$RECIPE_NAME
+readonly BUILD_DIR=$PKG_WORK_DIR/build
+readonly OUTPUT_DIR=$PKG_WORK_DIR/output
+
+# Initialize build directories.
+rm -rf $PKG_WORK_DIR
+mkdir -p $BUILD_DIR
+mkdir -p $OUTPUT_DIR
+
 # Setup functions.
 
 run_function_if_exists() {
@@ -22,15 +31,13 @@ run_function_if_exists() {
   fi
 }
 
-# Setup build variables.
-readonly PKG_WORK_DIR=$WORK_DIR/$RECIPE_NAME
-readonly BUILD_DIR=$PKG_WORK_DIR/build
-readonly OUTPUT_DIR=$PKG_WORK_DIR/output
-
-# Initialize build directories.
-rm -rf $PKG_WORK_DIR
-mkdir -p $BUILD_DIR
-mkdir -p $OUTPUT_DIR
+git_clone_tag() {
+  REPO_URL=${1:?"You need to specify the repository URL!"}
+  TAG_NAME=${2:?"You need to specify the tag name!"}
+  DIR_NAME=${3:-"$BUILD_DIR/repo"}
+  git clone $REPO_URL $DIR_NAME
+  (cd $DIR_NAME && git checkout $TAG_NAME)
+}
 
 # Load the recipe.
 source $RECIPE
