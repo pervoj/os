@@ -14,8 +14,19 @@ prepare() {
     https://gitlab.com/pervoj/dotfiles/raw/$COMMIT/.bashrc.d/prompt.sh
 }
 
+build() {
+  log "Creating /etc/profile.d/$NAME.sh file."
+  echo "source $PREFIX/share/$NAME/$NAME.sh" > profile.sh
+}
+
 install() {
   log "Installing $NAME.sh file."
-  mkdir -p $OUTPUT_DIR$PREFIX/share/prompt
-  mv $NAME.sh $OUTPUT_DIR$PREFIX/share/prompt
+  mkdir -p $OUTPUT_DIR$PREFIX/share/$NAME
+  mv $NAME.sh $OUTPUT_DIR$PREFIX/share/$NAME
+
+  log "Installing /etc/profile.d/$NAME.sh file."
+  mkdir -p $OUTPUT_DIR$PREFIX/etc/profile.d
+  mkdir -p $OUTPUT_DIR/etc/profile.d
+  cp profile.sh $OUTPUT_DIR$PREFIX/etc/profile.d/$NAME.sh
+  cp profile.sh $OUTPUT_DIR/etc/profile.d/$NAME.sh
 }
