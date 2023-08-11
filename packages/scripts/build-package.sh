@@ -32,7 +32,7 @@ _CURRENT_PWD=$PWD
 source $RECIPE
 
 if [[ -n "${BUILD_DEPENDENCIES[@]}" ]]; then
-  dnf install -y "${BUILD_DEPENDENCIES[@]}"
+  dnf install -y  --repo fedora --repo updates "${BUILD_DEPENDENCIES[@]}"
 fi
 
 run_function_if_exists "prepare"
