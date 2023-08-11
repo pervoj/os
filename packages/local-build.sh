@@ -21,6 +21,7 @@ OUTPUT_DIR=${OUTPUT_DIR:-"$PWD/output"}
 podman run --rm --privileged \
   -e WORK_DIR \
   -e OUTPUT_DIR \
+  -e PREFIX \
   -v $PACKAGES_DIR:/tmp/packages \
   -w /tmp/packages \
   registry.fedoraproject.org/fedora:latest \
