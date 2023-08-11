@@ -17,12 +17,23 @@ readonly PKG_WORK_DIR=$WORK_DIR/$RECIPE_NAME
 readonly BUILD_DIR=$PKG_WORK_DIR/build
 readonly OUTPUT_DIR=$PKG_WORK_DIR/output
 
-# Initialize build directories.
-rm -rf $PKG_WORK_DIR
-mkdir -p $BUILD_DIR
-mkdir -p $OUTPUT_DIR
-
 # Setup functions.
+
+echo_color() {
+  COLOR_CODE=${1:?"You need to specify the color code!"}
+  echo -en "\e[${1}m"
+  shift
+  echo -e "$@"
+  echo -en "\e[0m"
+}
+
+info() {
+  echo_color "1;34" $@
+}
+
+log() {
+  echo_color "33" $@
+}
 
 run_function_if_exists() {
   FUNCTION_NAME=${1:?"You need to specify the name of the function!"}
@@ -38,6 +49,15 @@ git_clone_tag() {
   git clone $REPO_URL $DIR_NAME
   (cd $DIR_NAME && git checkout $TAG_NAME)
 }
+
+# Log build started.
+info "\n--- BUILDING PACKAGE ---"
+info "    $RECIPE\n"
+
+# Initialize build directories.
+rm -rf $PKG_WORK_DIR
+mkdir -p $BUILD_DIR
+mkdir -p $OUTPUT_DIR
 
 # Load the recipe.
 source $RECIPE
@@ -58,3 +78,6 @@ run_function_if_exists "install"
 
 # Move to previous PWD.
 cd $_CURRENT_PWD
+
+info "\n    $RECIPE"
+info "--- END BUILDING PACKAGE ---\n"
