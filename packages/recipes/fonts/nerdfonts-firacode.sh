@@ -19,7 +19,7 @@ build() {
 }
 
 install() {
-  log "Installing $NAME directory."
+  log "Installing $NAME fonts."
   mkdir -p $OUTPUT_DIR$PREFIX/share/fonts
-  mv $NAME $OUTPUT_DIR$PREFIX/share/fonts
+  cp $NAME/*.ttf $OUTPUT_DIR$PREFIX/share/fonts
 }
