@@ -27,13 +27,14 @@ rm -rf $PKG_WORK_DIR
 mkdir -p $BUILD_DIR
 mkdir -p $OUTPUT_DIR
 
-_CURRENT_PWD=$PWD
-
 source $RECIPE
 
 if [[ -n "${BUILD_DEPENDENCIES[@]}" ]]; then
   dnf install -y  --repo fedora --repo updates "${BUILD_DEPENDENCIES[@]}"
 fi
+
+_CURRENT_PWD=$PWD
+cd $BUILD_DIR
 
 run_function_if_exists "prepare"
 run_function_if_exists "build"
