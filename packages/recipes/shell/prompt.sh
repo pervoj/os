@@ -15,7 +15,7 @@ prepare() {
 }
 
 install() {
-  log "Installing /etc/profile.d/$NAME.sh file."
-  mkdir -p $OUTPUT_DIR$PREFIX/etc/profile.d
-  mv $NAME.sh $OUTPUT_DIR$PREFIX/etc/profile.d
+  log "Installing $NAME.sh file."
+  mkdir -p $OUTPUT_DIR$PREFIX/share/prompt
+  mv $NAME.sh $OUTPUT_DIR$PREFIX/share/prompt
 }
