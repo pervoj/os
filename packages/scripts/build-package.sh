@@ -32,7 +32,7 @@ info() {
 }
 
 log() {
-  echo_color "33" $@
+  echo_color "1;33" $@
 }
 
 run_function_if_exists() {
@@ -51,8 +51,7 @@ git_clone_tag() {
 }
 
 # Log build started.
-info "\n--- BUILDING PACKAGE ---"
-info "    $RECIPE\n"
+info "\n--- BUILDING PACKAGE ($RECIPE_NAME) ---\n"
 
 # Initialize build directories.
 rm -rf $PKG_WORK_DIR
@@ -64,6 +63,7 @@ source $RECIPE
 
 # Install build dependencies.
 if [[ -n "${BUILD_DEPENDENCIES[@]}" ]]; then
+  log "Installing build dependencies."
   dnf install -y  --repo fedora --repo updates "${BUILD_DEPENDENCIES[@]}"
 fi
 
@@ -79,5 +79,4 @@ run_function_if_exists "install"
 # Move to previous PWD.
 cd $_CURRENT_PWD
 
-info "\n    $RECIPE"
-info "--- END BUILDING PACKAGE ---\n"
+info "\n--- END BUILDING PACKAGE ($RECIPE_NAME) ---\n"
