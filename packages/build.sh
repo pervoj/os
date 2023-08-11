@@ -25,5 +25,5 @@ find $RECIPES_DIR -type f -name "*.sh" -exec $SCRIPTS_DIR/build-package.sh {} \;
 
 # Move their output into the shared output directory.
 for PACKAGE_OUTPUT in $WORK_DIR/*/output; do
-  mv $PACKAGE_OUTPUT/* $OUTPUT_DIR
+  cp -r $PACKAGE_OUTPUT/* $OUTPUT_DIR
 done
