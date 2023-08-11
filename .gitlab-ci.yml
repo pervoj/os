@@ -6,12 +6,13 @@ stages:
 packages:
   stage: packages
   image: registry.fedoraproject.org/fedora:latest
+  variables:
+    OUTPUT_DIR: /tmp/built-packages
   script:
     - sh packages/build.sh
-    - mv output built-packages
+    - cp /tmp/built-packages/* files
   artifacts:
-    paths:
-      - built-packages
+    untracked: true
 
 build:
   stage: build
