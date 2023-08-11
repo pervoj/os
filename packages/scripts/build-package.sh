@@ -46,6 +46,7 @@ git_clone_tag() {
   REPO_URL=${1:?"You need to specify the repository URL!"}
   TAG_NAME=${2:?"You need to specify the tag name!"}
   DIR_NAME=${3:-"$BUILD_DIR/repo"}
+  log "Cloning a Git repository."
   git clone $REPO_URL $DIR_NAME
   (cd $DIR_NAME && git checkout $TAG_NAME)
 }
