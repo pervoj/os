@@ -12,7 +12,8 @@ packages:
     - sh packages/build.sh
     - cp -r /tmp/built-packages/* files
   artifacts:
-    untracked: true
+    paths:
+      - files
 
 build:
   stage: build
