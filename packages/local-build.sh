@@ -13,14 +13,8 @@ if [[ -n "$1" ]]; then
   EXEC="./scripts/build-package.sh recipes/$1"
 fi
 
-# Setup working directory paths.
-WORK_DIR=${WORK_DIR:-"$PWD/build"}
-OUTPUT_DIR=${OUTPUT_DIR:-"$PWD/output"}
-
 # Run the build in a Podman container.
 podman run --rm --privileged \
-  -e WORK_DIR \
-  -e OUTPUT_DIR \
   -e PREFIX \
   -v $PACKAGES_DIR:/tmp/packages \
   -w /tmp/packages \
