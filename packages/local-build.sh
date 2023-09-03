@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Tell build process to exit if there are any errors.
-set -oue pipefail
-
 # Setup path variables.
 SCRIPT_PATH=$(realpath "$0")
 PACKAGES_DIR=$(dirname "$SCRIPT_PATH")
