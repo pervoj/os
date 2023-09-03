@@ -40,7 +40,6 @@ jobs:
           echo "tags=${TAGS[*]}" >> $GITHUB_OUTPUT
 
       - name: Build packages
-        shell: bash
         run: |
           sh packages/local-build.sh
           cp -r packages/output/* files
