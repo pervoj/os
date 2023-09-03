@@ -16,10 +16,9 @@ jobs:
     name: Build and push image
     runs-on: ubuntu-latest
 
-    # permissions:
-    #   contents: read
-    #   packages: write
-    #   id-token: write
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout the repository
