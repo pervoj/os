@@ -1,7 +1,13 @@
 name: Build
-on: push
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight
 
 env:
+  REGISTRY_USER: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ github.token }}
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_NAME: os
 
@@ -9,17 +15,13 @@ jobs:
   build:
     name: Build and push image
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
+
+    # permissions:
+    #   contents: read
+    #   packages: write
+    #   id-token: write
+
     steps:
-      - name: Install Podman
-        uses: gacts/install-podman@v1
-
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@v3.1.1
-
       - name: Checkout the repository
         uses: actions/checkout@v3
 
@@ -40,7 +42,6 @@ jobs:
           echo "tags=${TAGS[*]}" >> $GITHUB_OUTPUT
 
       - name: Build packages
-        shell: bash
         run: |
           sh packages/local-build.sh
           cp -r packages/output/* files
@@ -55,20 +56,25 @@ jobs:
           tags: ${{ steps.generate-tags.outputs.tags }}
           oci: false
 
-      - name: Push to GHCR
+      - name: Log in to ghcr.io
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+
+      - name: Push to ghcr.io
         uses: redhat-actions/push-to-registry@v2
         id: push
-        env:
-          REGISTRY_USER: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ github.token }}
         with:
           image: ${{ steps.build_image.outputs.image }}
           tags: ${{ steps.build_image.outputs.tags }}
           registry: ${{ env.IMAGE_REGISTRY }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
           extra-args: |
             --disable-content-trust
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
 
       - name: Sign image
         run: |
@@ -78,3 +84,7 @@ jobs:
           TAGS: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+
+      - name: Echo outputs
+        run: |
+          echo "${{ toJSON(steps.push.outputs) }}"
