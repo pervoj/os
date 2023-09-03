@@ -9,7 +9,7 @@ env:
   REGISTRY_USER: ${{ github.actor }}
   REGISTRY_PASSWORD: ${{ github.token }}
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
-  IMAGE_NAME: os-image
+  IMAGE_NAME: os
 
 jobs:
   build:
