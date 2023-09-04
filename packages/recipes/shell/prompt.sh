@@ -17,10 +17,9 @@ prepare() {
 build() {
   log "Creating /etc/profile.d/$NAME.sh file."
   cat > profile.sh << EOL
-if [[ ! -f "\$HOME/.prompt-configured" ]]; then
+if [[ ! -f "\$HOME/.bashrc.d/prompt.sh" ]]; then
   mkdir -p "\$HOME/.bashrc.d"
   echo "source $PREFIX/share/$NAME/$NAME.sh" > "\$HOME/.bashrc.d/prompt.sh"
-  touch "\$HOME/.prompt-configured"
 fi
 EOL
 }
@@ -32,5 +31,5 @@ install() {
 
   log "Installing /etc/profile.d/$NAME.sh file."
   mkdir -p $OUTPUT_DIR$PREFIX/etc/profile.d
-  mv profile.sh $OUTPUT_DIR$PREFIX/etc/profile.d
+  mv profile.sh $OUTPUT_DIR$PREFIX/etc/profile.d/$NAME.sh
 }
