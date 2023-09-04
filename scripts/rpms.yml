@@ -2,4 +2,7 @@ install:
   # Our OKI MC563dn scanner driver.
   - https://www.oki.com/printing/download/okimfpsdrv-1.7-0.x86_64_231228.rpm
 
+  # Install VSCodium.
+  - https://github.com/VSCodium/vscodium/releases/download/1.81.1.23222/codium-1.81.1.23222-el7.x86_64.rpm
+
 remove: []
