@@ -15,14 +15,12 @@ build() {
   (cd repo && make)
 
   log "Creating /etc/profile.d/$NAME.sh file."
-
-  LANG_FILE="$PREFIX/etc/profile.d/lang.sh"
-  echo -e "if [[ -z \"\$LANG\" ]]; then\n  source $LANG_FILE\nfi\n" > $NAME.sh
-
-  echo -e "source $PREFIX/share/$NAME/ble.sh\n" >> $NAME.sh
-
-  PROMPT_FILE="$PREFIX/etc/profile.d/prompt.sh"
-  echo -e "if [[ -f \"$PROMPT_FILE\" ]]; then\n  source $PROMPT_FILE\nfi" >> $NAME.sh
+  cat > $NAME.sh << EOL
+if [[ ! -f "\$HOME/.bashrc.d/$NAME.sh" ]]; then
+  mkdir -p "\$HOME/.bashrc.d"
+  echo "source $PREFIX/share/$NAME/ble.sh" > "\$HOME/.bashrc.d/$NAME.sh"
+fi
+EOL
 }
 
 install() {
