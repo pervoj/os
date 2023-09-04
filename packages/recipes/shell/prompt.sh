@@ -17,9 +17,9 @@ prepare() {
 build() {
   log "Creating /etc/profile.d/$NAME.sh file."
   cat > profile.sh << EOL
-if [[ ! -f "\$HOME/.bashrc.d/prompt.sh" ]]; then
+if [[ ! -f "\$HOME/.bashrc.d/$NAME.sh" ]]; then
   mkdir -p "\$HOME/.bashrc.d"
-  echo "source $PREFIX/share/$NAME/$NAME.sh" > "\$HOME/.bashrc.d/prompt.sh"
+  echo "source $PREFIX/share/$NAME/$NAME.sh" > "\$HOME/.bashrc.d/$NAME.sh"
 fi
 EOL
 }
