@@ -4,7 +4,7 @@ import { getTempDir } from "./temp";
 
 export async function addRepository(url: `http${"s" | ""}://${string}.repo`) {
   const fileName = url.split("/").reverse().shift()!;
-  const outputPath = join(getTempDir(), fileName);
+  const outputPath = join(getTempDir("repo", fileName), fileName);
 
   await $`
     curl -qO ${outputPath} ${url}
