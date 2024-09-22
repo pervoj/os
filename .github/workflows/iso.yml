@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     outputs:
-      alias_tag: ${{ steps.generate-tag.outputs.alias_tag }}
-      alias_tags: ${{ steps.generate-tag.outputs.alias_tags }}
+      tags: "${{ steps.generate-tag.outputs.tags }}"
 
     steps:
       - name: Generate tag
@@ -36,22 +35,12 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
               TAGS+=("${PR_TAG}")
               TAGS+=("${COMMIT_TAG}")
-
-              alias_tag="${COMMIT_TAG}"
-          elif [[ "${BRANCH_NAME}" != "main" ]]; then
-              TAGS+=("${BRANCH_NAME}")
-              TAGS+=("${BRANCH_NAME}-${TIMESTAMP}")
-
-              alias_tag="${BRANCH_NAME}-${TIMESTAMP}"
           else
               TAGS+=("${LATEST_TAG}")
-              TAGS+=("${TIMESTAMP}")
-
-              alias_tag="${TIMESTAMP}"
+              #TAGS+=("${TIMESTAMP}")
           fi
 
-          echo "alias_tag=${alias_tag}" >> $GITHUB_OUTPUT
-          echo "alias_tags=$(jq -nc '$ARGS.positional' --args ${TAGS[@]})" >> $GITHUB_OUTPUT
+          echo "tags=$(jq -nc '$ARGS.positional' --args ${TAGS[@]})" >> $GITHUB_OUTPUT
 
   generate-iso:
     name: Generate an ISO image
@@ -59,9 +48,27 @@ jobs:
     needs: generate-tags
     strategy:
       matrix:
-        tag: ${{ fromJSON(needs.generate-tags.outputs.alias_tags) }}
+        tag: "${{ fromJSON(needs.generate-tags.outputs.tags) }}"
 
     steps:
-      - run: echo "$tag"
-        env:
-          tag: ${{ matrix.tag }}
+      - name: Build ISO
+        uses: jasonn3/build-container-installer@main
+        id: iso-build
+        with:
+          image_name: "${{ github.event.repository.name }}"
+          image_repo: "ghcr.io/${{ github.repository_owner }}"
+          image_tag: "${{ matrix.tag }}"
+          variant: "${{ env.VARIANT }}"
+          iso_name: "${{ github.event.repository.name }}-${{ matrix.tag }}.iso"
+
+      - name: Upload ISO as artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.iso-build.outputs.iso_name }}
+          path: |
+            ${{ steps.build.outputs.iso_path }}
+            ${{ steps.build.outputs.iso_path }}-CHECKSUM
+          if-no-files-found: error
+          retention-days: 0
+          compression-level: 0
