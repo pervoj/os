@@ -38,7 +38,7 @@ jobs:
               TAGS+=("${COMMIT_TAG}")
 
               alias_tag="${COMMIT_TAG}"
-          else if [[ "${BRANCH_NAME}" != "main" ]]; then
+          elif [[ "${BRANCH_NAME}" != "main" ]]; then
               TAGS+=("${BRANCH_NAME}")
               TAGS+=("${BRANCH_NAME}-${TIMESTAMP}")
 
