@@ -1,0 +1,67 @@
+name: ISO
+on:
+  workflow_run:
+    workflows:
+      - Build
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  generate-tags:
+    name: Generate tags
+    runs-on: ubuntu-24.04
+
+    outputs:
+      alias_tag: ${{ steps.generate-tag.outputs.alias_tag }}
+      alias_tags: ${{ steps.generate-tag.outputs.alias_tags }}
+
+    steps:
+      - name: Generate tag
+        id: generate-tag
+        shell: bash
+        run: |
+          TAGS=()
+          TIMESTAMP="$(date +%Y%m%d)"
+
+          SHA_SHORT="${GITHUB_SHA::7}"
+          BRANCH_NAME="${{ github.head_ref || github.ref_name }}"
+
+          PR_TAG="pr-${{ github.event.number }}"
+          COMMIT_TAG="${SHA_SHORT}"
+
+          BUILD_TAG="${TIMESTAMP}"
+          LATEST_TAG="latest"
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              TAGS+=("${PR_TAG}")
+              TAGS+=("${COMMIT_TAG}")
+
+              alias_tag="${COMMIT_TAG}"
+          else if [[ "${BRANCH_NAME}" != "main" ]]; then
+              TAGS+=("${BRANCH_NAME}")
+              TAGS+=("${BRANCH_NAME}-${TIMESTAMP}")
+
+              alias_tag="${BRANCH_NAME}-${TIMESTAMP}"
+          else
+              TAGS+=("${LATEST_TAG}")
+              TAGS+=("${TIMESTAMP}")
+
+              alias_tag="${TIMESTAMP}"
+          fi
+
+          echo "alias_tag=${alias_tag}" >> $GITHUB_OUTPUT
+          echo "alias_tags=${TAGS[*]}" >> $GITHUB_OUTPUT
+
+  generate-iso:
+    name: Generate an ISO image
+    runs-on: ubuntu-24.04
+    needs: generate-tags
+    strategy:
+      matrix:
+        tag: ${{ needs.generate-tags.outputs.alias_tag }}
+
+    steps:
+      - run: echo "$tag"
+        env:
+          tag: ${{ matrix.tag }}

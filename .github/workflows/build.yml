@@ -1,4 +1,4 @@
-name: build-ublue-custom
+name: Build
 on:
   pull_request:
     branches:
