@@ -58,7 +58,7 @@ jobs:
           image_name: "${{ github.event.repository.name }}"
           image_repo: "ghcr.io/${{ github.repository_owner }}"
           image_tag: "${{ matrix.tag }}"
-          variant: "${{ env.VARIANT }}"
+          variant: "Silverblue"
           iso_name: "${{ github.event.repository.name }}-${{ matrix.tag }}.iso"
 
       - name: Upload ISO as artifact
