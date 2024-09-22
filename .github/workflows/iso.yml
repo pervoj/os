@@ -59,7 +59,7 @@ jobs:
     needs: generate-tags
     strategy:
       matrix:
-        tag: ${{ needs.generate-tags.outputs.alias_tag }}
+        tag: ${{ needs.generate-tags.outputs.alias_tags }}
 
     steps:
       - run: echo "$tag"
