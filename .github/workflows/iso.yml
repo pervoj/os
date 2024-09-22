@@ -51,7 +51,7 @@ jobs:
           fi
 
           echo "alias_tag=${alias_tag}" >> $GITHUB_OUTPUT
-          echo "alias_tags=${TAGS[*]}" >> $GITHUB_OUTPUT
+          echo "alias_tags=$(jq -nc '$ARGS.positional' --args ${TAGS[@]})" >> $GITHUB_OUTPUT
 
   generate-iso:
     name: Generate an ISO image
@@ -59,7 +59,7 @@ jobs:
     needs: generate-tags
     strategy:
       matrix:
-        tag: ${{ needs.generate-tags.outputs.alias_tags }}
+        tag: ${{ fromJSON(needs.generate-tags.outputs.alias_tags) }}
 
     steps:
       - run: echo "$tag"
