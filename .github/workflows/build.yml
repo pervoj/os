@@ -8,6 +8,8 @@ on:
   push:
     branches:
       - main
+    tags:
+      - "*"
     paths-ignore:
       - "**/README.md"
   workflow_dispatch:
@@ -64,6 +66,8 @@ jobs:
               done
 
               alias_tags=("${COMMIT_TAGS[@]}")
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+              alias_tags=("${{ github.ref_name }}")
           else
               alias_tags=("${BUILD_TAGS[@]}")
           fi
