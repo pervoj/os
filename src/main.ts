@@ -1,4 +1,40 @@
+import { installPackages } from "./utils/packages";
 import { addRepository } from "./utils/repos";
 
-console.log("Adding Docker Repository...");
+console.log("Install codecs");
+await installPackages(
+  "gstreamer1-plugin-openh264",
+  "gstreamer1-plugins-bad-free-extras",
+  "gstreamer1-plugins-bad-free-fluidsynth",
+  "gstreamer1-plugins-bad-free-wildmidi",
+  "gstreamer1-plugins-bad-free-zbar",
+  "gstreamer1-plugins-good-extras",
+  "gstreamer1-plugins-good-gtk",
+  "lame"
+);
+
+console.log("Install misc packages");
+await installPackages(
+  "langpacks-cs",
+  "gnome-tweaks",
+  "firewall-config",
+  "nautilus-python",
+  "steam-devices",
+  "twitter-twemoji-fonts"
+);
+
+console.log("Install Docker");
 await addRepository("https://download.docker.com/linux/fedora/docker-ce.repo");
+await installPackages(
+  "docker-ce",
+  "docker-ce-cli",
+  "containerd.io",
+  "docker-buildx-plugin",
+  "docker-compose-plugin"
+);
+
+console.log("Install VS Code");
+await addRepository(
+  "https://packages.microsoft.com/yumrepos/vscode/config.repo"
+);
+await installPackages("code");
