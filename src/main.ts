@@ -1,5 +1,13 @@
+import { $ } from "bun";
 import { installPackages } from "./utils/packages";
 import { addRepository } from "./utils/repos";
+
+console.log("Enable RPM Fusion");
+await $`
+  rpm-ostree install \
+    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+`;
 
 console.log("Install codecs");
 await installPackages(
