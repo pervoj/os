@@ -1,1 +1,0 @@
-(cd "$SCRIPT_DIR"; "$BUN" install; "$BUN" .)
