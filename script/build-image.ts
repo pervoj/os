@@ -40,6 +40,13 @@ function getLabels() {
     ]);
   }
 
+  if (repo) {
+    labels.push([
+      "org.opencontainers.image.source",
+      `https://github.com/${repo}`,
+    ]);
+  }
+
   if (hasReadme && repo) {
     const ref = commitSha ?? refName;
     const file = `variants/${variantName}/README.md`;
