@@ -1,14 +1,18 @@
-ARG SOURCE_IMAGE="silverblue"
-ARG SOURCE_TAG="41"
+ARG BASE_IMAGE
+FROM quay.io/fedora-ostree-desktops/${BASE_IMAGE}
 
-FROM quay.io/fedora-ostree-desktops/${SOURCE_IMAGE}:${SOURCE_TAG}
+ARG VARIANT_NAME
 
-COPY src /tmp/os-src
+COPY src/install-bun.sh /tmp/os-script/src/install-bun.sh
+RUN chmod +x /tmp/os-script/src/install-bun.sh; \
+    /tmp/os-script/src/install-bun.sh; \
+    ostree container commit;
 
-RUN mkdir -p /var/lib/alternatives && \
-    chmod +x /tmp/os-src/main.sh && \
-    /tmp/os-src/main.sh && \
-    ostree container commit
+COPY . /tmp/os-script
+RUN mkdir -p /var/lib/alternatives; \
+    chmod +x /tmp/os-script/src/run-script.sh; \
+    VARIANT_NAME=${VARIANT_NAME} /tmp/os-script/src/run-script.sh; \
+    ostree container commit;
 
 ## NOTES:
 # - /var/lib/alternatives is required to prevent failure with some RPM installs
