@@ -29,31 +29,33 @@ function getTags() {
 }
 
 function getLabels() {
-  const labels = new Map<string, string>();
+  const labels: [string, string][] = [];
 
-  labels.set("org.opencontainers.image.title", metadata.imageTitle);
+  labels.push(["org.opencontainers.image.title", metadata.imageTitle]);
 
   if (metadata.imageDescription) {
-    labels.set(
+    labels.push([
       "org.opencontainers.image.description",
-      metadata.imageDescription
-    );
+      metadata.imageDescription,
+    ]);
   }
 
   if (hasReadme && repo) {
     const ref = commitSha ?? refName;
     const file = `variants/${variantName}/README.md`;
-    labels.set(
+    labels.push([
       "io.artifacthub.package.readme-url",
-      `https://raw.githubusercontent.com/${repo}/${ref}/${file}`
-    );
+      `https://raw.githubusercontent.com/${repo}/${ref}/${file}`,
+    ]);
   }
 
-  return [...labels.entries()].map((entry) => entry.join("="));
+  return labels.map((entry) => entry.join("="));
 }
 
 const tags = getTags();
 const labels = getLabels();
+
+console.log("LABELS:", labels);
 
 await $`
   podman build \
