@@ -1,10 +1,12 @@
 import { $ } from "bun";
-import { dirname } from "path";
+import { exists } from "fs/promises";
+import { dirname, join } from "path";
 import { importVariantFromArgs } from "../src/utils/import-variant";
 
-const { variantName, metadata } = await importVariantFromArgs();
-
 const dir = dirname(__dirname);
+
+const { variantName, metadata } = await importVariantFromArgs();
+const hasReadme = await exists(join(metadata.baseDirectory, "README.md"));
 
 const registryUser = process.env.REGISTRY_USER;
 const registryPassword = process.env.REGISTRY_PASSWORD;
@@ -38,10 +40,12 @@ function getLabels() {
     );
   }
 
-  if (repo) {
+  if (hasReadme && repo) {
+    const ref = commitSha ?? refName;
+    const file = `variants/${variantName}/README.md`;
     labels.set(
       "io.artifacthub.package.readme-url",
-      `https://raw.githubusercontent.com/${repo}/main/README.md`
+      `https://raw.githubusercontent.com/${repo}/${ref}/${file}`
     );
   }
 
