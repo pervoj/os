@@ -4,7 +4,8 @@ export default createVariant(
   {
     imageTitle: "Circle OS",
     imageDescription: "Personal OS image based on Fedora Silverblue",
-    baseImage: "silverblue:41",
+    baseImageName: "silverblue",
+    baseImageVersion: "41",
     baseDirectory: __dirname,
   },
   async ({

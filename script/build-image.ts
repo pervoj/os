@@ -62,12 +62,12 @@ function getLabels() {
 const tags = getTags();
 const labels = getLabels();
 
-console.log("LABELS:", labels);
+const baseImage = metadata.baseImageName + ":" + metadata.baseImageVersion;
 
 await $`
   podman build \
     --build-arg="VARIANT_NAME=${variantName}" \
-    --build-arg="BASE_IMAGE=${metadata.baseImage}" \
+    --build-arg="BASE_IMAGE=${baseImage}" \
     ${tags.map((tag) => ["--tag", tag])} \
     ${labels.map((label) => ["--label", label])} \
     ${dir}

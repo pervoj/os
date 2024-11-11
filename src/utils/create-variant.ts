@@ -6,7 +6,8 @@ export type VariantInput = Awaited<ReturnType<typeof getVariantInput>>;
 export type VariantFunction = (input: VariantInput) => PromiseOr<void>;
 
 export type VariantMetadata = {
-  baseImage: `${string}:${number}`;
+  baseImageName: string;
+  baseImageVersion: string;
   baseDirectory: string;
   imageTitle: string;
   imageDescription?: string;

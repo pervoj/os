@@ -2,10 +2,37 @@ name: ISO
 on:
   workflow_dispatch:
 
+env:
+  IMAGE_NAME: "${{ github.event.repository.name }}"
+  IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
+
 jobs:
+  variants:
+    name: Prepare list of variants
+    runs-on: ubuntu-latest
+    outputs:
+      variants: ${{ steps.json.outputs.variants }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Load variants
+        id: json
+        run: |
+          output=$(bun script/list-variants.ts)
+          echo "variants=$output\n" >> $GITHUB_OUTPUT
+
   generate-iso:
     name: Generate an ISO image
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+
+    needs: variants
+    strategy:
+      matrix:
+        variant: ${{ fromJson(needs.variants.outputs.variants) }}
 
     steps:
       - name: Generate tag
@@ -19,22 +46,34 @@ jobs:
 
           echo "tag=${tag}" >> $GITHUB_OUTPUT
 
+      - name: Get base image
+        id: base-image
+        run: |
+          OUTPUT=$(bun script/get-base-image.ts ${{ matrix.variant }})
+          IMAGE=$(echo $OUTPUT | jq -r ".name")
+          VERSION=$(echo $OUTPUT | jq -r ".version")
+          echo "name=${IMAGE}" >> $GITHUB_ENV
+          echo "version=${VERSION}" >> $GITHUB_ENV
+
       - name: Build ISO
         uses: jasonn3/build-container-installer@main
         id: iso-build
+        env:
+          IMAGE_FULL_NAME: "${{ env.IMAGE_NAME }}-${{ env.IMAGE_NAME }}"
         with:
-          image_name: "${{ github.event.repository.name }}"
-          image_repo: "ghcr.io/${{ github.repository_owner }}"
+          image_name: "${{ env.IMAGE_FULL_NAME }}"
+          image_repo: "${{ env.IMAGE_REGISTRY }}"
           image_tag: "${{ steps.generate-tag.outputs.tag }}"
-          variant: "Silverblue"
-          iso_name: "${{ github.event.repository.name }}-${{ matrix.tag }}.iso"
+          variant: "${{ steps.base-image.outputs.name }}"
+          version: "${{ steps.base-image.outputs.version }}"
+          iso_name: "${{ env.IMAGE_FULL_NAME }}.iso"
 
       - name: Upload ISO as artifact
         id: upload
         uses: actions/upload-artifact@v4
         with:
           name: "${{ steps.iso-build.outputs.iso_name }}"
-          path: "${{ steps.build.outputs.iso_path }}"
+          path: "${{ steps.iso-build.outputs.iso_path }}"
           if-no-files-found: error
           retention-days: 0
           compression-level: 0
