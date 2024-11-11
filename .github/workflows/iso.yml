@@ -68,7 +68,7 @@ jobs:
         uses: jasonn3/build-container-installer@main
         id: iso-build
         env:
-          IMAGE_FULL_NAME: "${{ env.IMAGE_NAME }}-${{ env.IMAGE_NAME }}"
+          IMAGE_FULL_NAME: "${{ env.IMAGE_NAME }}-${{ matrix.variant }}"
         with:
           image_name: "${{ env.IMAGE_FULL_NAME }}"
           image_repo: "${{ env.IMAGE_REGISTRY }}"
