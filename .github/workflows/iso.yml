@@ -53,28 +53,23 @@ jobs:
               tag="latest"
           fi
 
-          echo "tag=${tag}" >> $GITHUB_OUTPUT
+          echo "tag=$tag\n" >> $GITHUB_OUTPUT
 
       - name: Get base image
         id: base-image
         run: |
-          OUTPUT=$(bun script/get-base-image.ts ${{ matrix.variant }})
-          IMAGE=$(echo $OUTPUT | jq -r ".name")
-          VERSION=$(echo $OUTPUT | jq -r ".version")
+          output=$(bun script/get-base-image.ts ${{ matrix.variant }})
+          name=$(echo $output | jq -r ".name")
+          version=$(echo $output | jq -r ".version")
 
-          echo "name=${IMAGE}"
-          echo "version=${VERSION}"
-
-          echo "name=${IMAGE}" >> $GITHUB_ENV
-          echo "version=${VERSION}" >> $GITHUB_ENV
-
-          echo "ENV=${GITHUB_ENV}"
+          echo "name=$name\n" >> $GITHUB_OUTPUT
+          echo "version=$version\n" >> $GITHUB_OUTPUT
 
       - name: Test output
         run: |
-          echo "name=${VARIANT}"
-          echo "version=${VERSION}"
-          echo "tag=${TAG}"
+          echo "name=$VARIANT"
+          echo "version=$VERSION"
+          echo "tag=$TAG"
         env:
           VARIANT: "${{ steps.base-image.outputs.name }}"
           VERSION: "${{ steps.base-image.outputs.version }}"
