@@ -23,7 +23,7 @@ jobs:
         id: json
         run: |
           output=$(bun script/list-variants.ts)
-          echo "variants=$output\n" >> $GITHUB_OUTPUT
+          echo "variants=$output" >> $GITHUB_OUTPUT
 
   generate-iso:
     name: Generate an ISO image
@@ -53,7 +53,7 @@ jobs:
               tag="latest"
           fi
 
-          echo "tag=$tag\n" >> $GITHUB_OUTPUT
+          echo "tag=$tag" >> $GITHUB_OUTPUT
 
       - name: Get base image
         id: base-image
@@ -62,8 +62,8 @@ jobs:
           name=$(echo $output | jq -r ".name")
           version=$(echo $output | jq -r ".version")
 
-          echo "name=$name\n" >> $GITHUB_OUTPUT
-          echo "version=$version\n" >> $GITHUB_OUTPUT
+          echo "name=$name" >> $GITHUB_OUTPUT
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Build ISO
         uses: jasonn3/build-container-installer@main

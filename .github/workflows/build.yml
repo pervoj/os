@@ -42,7 +42,7 @@ jobs:
         id: json
         run: |
           output=$(bun script/list-variants.ts)
-          echo "variants=$output\n" >> $GITHUB_OUTPUT
+          echo "variants=$output" >> $GITHUB_OUTPUT
 
   build_push:
     name: Build and push image
