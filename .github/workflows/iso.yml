@@ -76,7 +76,7 @@ jobs:
           image_tag: "${{ steps.generate-tag.outputs.tag }}"
           variant: "${{ steps.base-image.outputs.name }}"
           version: "${{ steps.base-image.outputs.version }}"
-          iso_name: "${{ env.IMAGE_FULL_NAME }}.iso"
+          iso_name: "${{ env.IMAGE_FULL_NAME }}-${{ steps.base-image.outputs.version }}.iso"
 
       - name: Upload ISO as artifact
         id: upload
