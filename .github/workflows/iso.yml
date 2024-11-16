@@ -61,8 +61,22 @@ jobs:
           OUTPUT=$(bun script/get-base-image.ts ${{ matrix.variant }})
           IMAGE=$(echo $OUTPUT | jq -r ".name")
           VERSION=$(echo $OUTPUT | jq -r ".version")
+
+          echo "name=${IMAGE}"
+          echo "version=${VERSION}"
+
           echo "name=${IMAGE}" >> $GITHUB_ENV
           echo "version=${VERSION}" >> $GITHUB_ENV
+
+          echo "ENV=${GITHUB_ENV}"
+
+      - name: Test output
+        run: |
+          echo "name=${VARIANT}"
+          echo "version=${VERSION}"
+        env:
+          VARIANT: "${{ steps.base-image.outputs.name }}"
+          VERSION: "${{ steps.base-image.outputs.version }}"
 
       - name: Build ISO
         uses: jasonn3/build-container-installer@main
