@@ -43,6 +43,10 @@ export default createVariant(
     );
 
     await installPackages(
+      // drivers
+      "intel-media-driver",
+      "mesa-vulkan-drivers",
+
       // codecs
       "gstreamer1-plugin-openh264",
       "gstreamer1-plugins-bad-free-extras",
