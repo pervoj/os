@@ -83,8 +83,8 @@ jobs:
 
       - name: Upload ISO to R2
         run: |
-          bun script/upload-file.ts ${{ steps.iso-build.outputs.iso_path }}-CHECKSUM
-          bun script/upload-file.ts ${{ steps.iso-build.outputs.iso_path }}
+          bun script/upload-file.ts ${{ steps.iso-build.outputs.iso_path }}/${{ steps.iso-build.outputs.iso_name }}
+          bun script/upload-file.ts ${{ steps.iso-build.outputs.iso_path }}/${{ steps.iso-build.outputs.iso_name }}-CHECKSUM
         env:
           R2_ENDPOINT: "${{ secrets.R2_ENDPOINT }}"
           R2_PUBLIC_URL: "${{ secrets.R2_PUBLIC_URL }}"
@@ -98,8 +98,8 @@ jobs:
         with:
           name: "${{ steps.iso-build.outputs.iso_name }}"
           path: |
-            ${{ steps.iso-build.outputs.iso_path }}
-            ${{ steps.iso-build.outputs.iso_path }}-CHECKSUM
+            ${{ steps.iso-build.outputs.iso_path }}/${{ steps.iso-build.outputs.iso_name }}
+            ${{ steps.iso-build.outputs.iso_path }}/${{ steps.iso-build.outputs.iso_name }}-CHECKSUM
           if-no-files-found: error
           retention-days: 0
           compression-level: 0
