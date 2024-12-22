@@ -44,6 +44,9 @@ jobs:
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
 
+      - name: Install dependencies
+        run: bun install
+
       - name: Generate tag
         id: generate-tag
         run: |
@@ -76,14 +79,27 @@ jobs:
           image_tag: "${{ steps.generate-tag.outputs.tag }}"
           variant: "${{ steps.base-image.outputs.name }}"
           version: "${{ steps.base-image.outputs.version }}"
-          iso_name: "${{ env.IMAGE_FULL_NAME }}-${{ steps.base-image.outputs.version }}.iso"
+          iso_name: "${{ env.IMAGE_FULL_NAME }}-${{ steps.generate-tag.outputs.tag }}-${{ steps.base-image.outputs.version }}.iso"
+
+      - name: Upload ISO to R2
+        run: |
+          bun script/upload-file.ts ${{ steps.iso-build.outputs.iso_path }}-CHECKSUM
+          bun script/upload-file.ts ${{ steps.iso-build.outputs.iso_path }}
+        env:
+          R2_ENDPOINT: "${{ secrets.R2_ENDPOINT }}"
+          R2_PUBLIC_URL: "${{ secrets.R2_PUBLIC_URL }}"
+          R2_ACCESS_KEY_ID: "${{ secrets.R2_ACCESS_KEY_ID }}"
+          R2_SECRET_ACCESS_KEY: "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+          R2_BUCKET: "${{ secrets.R2_BUCKET }}"
 
       - name: Upload ISO as artifact
         id: upload
         uses: actions/upload-artifact@v4
         with:
           name: "${{ steps.iso-build.outputs.iso_name }}"
-          path: "${{ steps.iso-build.outputs.iso_path }}"
+          path: |
+            ${{ steps.iso-build.outputs.iso_path }}
+            ${{ steps.iso-build.outputs.iso_path }}-CHECKSUM
           if-no-files-found: error
           retention-days: 0
           compression-level: 0
