@@ -29,6 +29,5 @@ export async function addRepositoryFromFile(
   filePath: string
 ) {
   console.log("Installing repository:", fileName);
-  await $`mkdir -p /usr/etc/yum.repos.d`;
-  await $`install -o 0 -g 0 -m644 ${filePath} ${`/usr/etc/yum.repos.d/${fileName}`}`;
+  await $`install -o 0 -g 0 -m644 ${filePath} ${`/etc/yum.repos.d/${fileName}`}`;
 }
