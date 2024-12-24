@@ -1,3 +1,4 @@
+import { $ } from "bun";
 import { writeFile } from "fs/promises";
 
 type Override = {
@@ -10,6 +11,7 @@ export async function createGschemaOverride(
   ...overrides: [Override, ...Override[]]
 ) {
   const overrideStrings = overrides.map(overrideToString).join("\n\n");
+  await $`mkdir -p /usr/share/glib-2.0/schemas`;
   await writeFile(
     `/usr/share/glib-2.0/schemas/${overrideName}.gschema.override`,
     overrideStrings,
