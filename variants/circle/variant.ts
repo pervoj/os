@@ -1,3 +1,5 @@
+import { $ } from "bun";
+import { writeFile } from "fs/promises";
 import { createVariant } from "~/utils/create-variant";
 
 export default createVariant(
@@ -9,9 +11,14 @@ export default createVariant(
     baseDirectory: __dirname,
   },
   async ({
-    fedoraVersion,
     addRepositoryFromString,
     addRepositoryFromUrl,
+    addToPath,
+    cloneGitRepo,
+    createGschemaOverride,
+    createProfileScript,
+    downloadFile,
+    fedoraVersion,
     installPackages,
     trimLines,
   }) => {
@@ -23,15 +30,15 @@ export default createVariant(
     await addRepositoryFromString(
       "firefoxpwa.repo",
       trimLines(`
-      [firefoxpwa]
-      name=FirefoxPWA
-      metadata_expire=300
-      baseurl=https://packagecloud.io/filips/FirefoxPWA/rpm_any/rpm_any/$basearch
-      gpgkey=https://packagecloud.io/filips/FirefoxPWA/gpgkey
-      repo_gpgcheck=1
-      gpgcheck=0
-      enabled=1
-    `)
+        [firefoxpwa]
+        name=FirefoxPWA
+        metadata_expire=300
+        baseurl=https://packagecloud.io/filips/FirefoxPWA/rpm_any/rpm_any/$basearch
+        gpgkey=https://packagecloud.io/filips/FirefoxPWA/gpgkey
+        repo_gpgcheck=1
+        gpgcheck=0
+        enabled=1
+      `)
     );
 
     await addRepositoryFromUrl(
@@ -72,11 +79,48 @@ export default createVariant(
       "docker-buildx-plugin",
       "docker-compose-plugin",
 
+      // Python
+      "python3",
+      "python3-pip",
+      "python3-virtualenv",
+      "python3-wheel",
+      "python3-devel",
+
       // VS Code
       "code",
 
       // Firefox PWA
       "firefoxpwa"
     );
+
+    // install PNPM
+    const pnpmPath = "/usr/share/pnpm";
+    await $`mkdir -p pnpmPath`;
+    await downloadFile(
+      "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linux-x64",
+      `${pnpmPath}/pnpm`
+    );
+    await writeFile(
+      `${pnpmPath}/pnpx`,
+      trimLines(`
+        #!/bin/sh
+        exec pnpm dlx "$@"
+      `),
+      "utf-8"
+    );
+    await $`chmod +x ${pnpmPath}/pnpx`;
+    await addToPath("pnpm", ["PNPM_HOME", pnpmPath]);
+
+    // install SBP
+    const sbpPath = "/usr/share/sbp";
+    await cloneGitRepo("https://github.com/brujoand/sbp.git", sbpPath);
+    await createProfileScript("sbp", `source ${sbpPath}/sbp.bash`);
+
+    await createGschemaOverride("gnome-desktop-overrides", {
+      schema: "org.gnome.mutter",
+      overrides: {
+        "center-new-windows": "true",
+      },
+    });
   }
 );
