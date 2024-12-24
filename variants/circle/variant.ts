@@ -114,7 +114,13 @@ export default createVariant(
     // install SBP
     const sbpPath = "/usr/share/sbp";
     await cloneGitRepo("https://github.com/brujoand/sbp.git", sbpPath);
-    await createProfileScript("sbp", `source ${sbpPath}/sbp.bash`);
+    await createProfileScript(
+      "sbp",
+      `
+        export SBP_PATH=${sbpPath}
+        source \$SBP_PATH/sbp.bash
+      `
+    );
 
     await createGschemaOverride("gnome-desktop-overrides", {
       schema: "org.gnome.mutter",
