@@ -3,6 +3,7 @@ import { writeFile } from "fs/promises";
 import { join } from "node:path";
 import { downloadFile, type Url } from "./download-file";
 import { getTempDir } from "./temp";
+import { trimLines } from "./trim-lines";
 
 export async function addRepositoryFromUrl(url: `${Url}.repo`) {
   const fileName = url.split("/").reverse().shift()!;
@@ -20,7 +21,7 @@ export async function addRepositoryFromString(
   const outputPath = join(getTempDir("repo", fileName), fileName);
 
   console.log("Writing repository:", fileName);
-  await writeFile(outputPath, content, { encoding: "utf8" });
+  await writeFile(outputPath, trimLines(content), { encoding: "utf8" });
   await addRepositoryFromFile(fileName, outputPath);
 }
 

@@ -1,9 +1,9 @@
-import { getVariantInput } from "./get-variant-input";
+import { getVariantCtx } from "./get-variant-ctx";
 
 type PromiseOr<T> = T | Promise<T>;
 
-export type VariantInput = Awaited<ReturnType<typeof getVariantInput>>;
-export type VariantFunction = (input: VariantInput) => PromiseOr<void>;
+export type VariantCtx = Awaited<ReturnType<typeof getVariantCtx>>;
+export type VariantFunction = (input: VariantCtx) => PromiseOr<void>;
 
 export type VariantMetadata = {
   baseImageName: string;
@@ -18,17 +18,17 @@ export function createVariant(
   variant: VariantFunction
 ) {
   async function buildVariant() {
-    const input = await getVariantInput(metadata.baseDirectory);
-    return await variant(input);
+    const ctx = await getVariantCtx(metadata.baseDirectory);
+    return await variant(ctx);
   }
 
   function extend(
     extMetadata: Omit<VariantMetadata, "baseImage">,
     extVariant: VariantFunction
   ) {
-    return createVariant({ ...metadata, ...extMetadata }, async (input) => {
+    return createVariant({ ...metadata, ...extMetadata }, async (ctx) => {
       await buildVariant();
-      await extVariant(input);
+      await extVariant(ctx);
     });
   }
 

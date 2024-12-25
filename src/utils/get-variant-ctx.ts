@@ -17,7 +17,7 @@ import {
 import { getTempDir } from "./temp";
 import { trimLines } from "./trim-lines";
 
-export async function getVariantInput(baseDirectory: string) {
+export async function getVariantCtx(baseDirectory: string) {
   const fedoraVersion = (await $`rpm -E %fedora`.text()).trim();
 
   return {

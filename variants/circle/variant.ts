@@ -1,6 +1,6 @@
 import { $ } from "bun";
 import { writeFile } from "fs/promises";
-import { createVariant } from "~/utils/create-variant";
+import { createVariant, type VariantCtx } from "~/utils/create-variant";
 
 export default createVariant(
   {
@@ -10,26 +10,15 @@ export default createVariant(
     baseImageVersion: "41",
     baseDirectory: __dirname,
   },
-  async ({
-    addRepositoryFromString,
-    addRepositoryFromUrl,
-    addToPath,
-    cloneGitRepo,
-    createGschemaOverride,
-    createProfileScript,
-    downloadFile,
-    fedoraVersion,
-    installPackages,
-    trimLines,
-  }) => {
-    await installPackages(
-      `https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${fedoraVersion}.noarch.rpm`,
-      `https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${fedoraVersion}.noarch.rpm`
+  async (ctx) => {
+    await ctx.installPackages(
+      `https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${ctx.fedoraVersion}.noarch.rpm`,
+      `https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${ctx.fedoraVersion}.noarch.rpm`
     );
 
-    await addRepositoryFromString(
+    await ctx.addRepositoryFromString(
       "firefoxpwa.repo",
-      trimLines(`
+      `
         [firefoxpwa]
         name=FirefoxPWA
         metadata_expire=300
@@ -38,18 +27,18 @@ export default createVariant(
         repo_gpgcheck=1
         gpgcheck=0
         enabled=1
-      `)
+      `
     );
 
-    await addRepositoryFromUrl(
+    await ctx.addRepositoryFromUrl(
       "https://download.docker.com/linux/fedora/docker-ce.repo"
     );
 
-    await addRepositoryFromUrl(
+    await ctx.addRepositoryFromUrl(
       "https://packages.microsoft.com/yumrepos/vscode/config.repo"
     );
 
-    await installPackages(
+    await ctx.installPackages(
       // drivers
       "intel-media-driver",
       "mesa-vulkan-drivers",
@@ -94,35 +83,10 @@ export default createVariant(
     );
 
     // install PNPM
-    const pnpmPath = "/usr/share/pnpm";
-    await $`mkdir -p pnpmPath`;
-    await downloadFile(
-      "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linux-x64",
-      `${pnpmPath}/pnpm`
-    );
-    await writeFile(
-      `${pnpmPath}/pnpx`,
-      trimLines(`
-        #!/bin/sh
-        exec pnpm dlx "$@"
-      `),
-      "utf-8"
-    );
-    await $`chmod +x ${pnpmPath}/pnpx`;
-    await addToPath("pnpm", ["PNPM_HOME", pnpmPath]);
+    await installPnpm(ctx);
 
-    // install SBP
-    const sbpPath = "/usr/share/sbp";
-    await cloneGitRepo("https://github.com/brujoand/sbp.git", sbpPath);
-    await createProfileScript(
-      "sbp",
-      `
-        export SBP_PATH=${sbpPath}
-        source \$SBP_PATH/sbp.bash
-      `
-    );
-
-    await createGschemaOverride("gnome-desktop-overrides", {
+    // overrides for GNOME
+    await ctx.createGschemaOverride("gnome-desktop-overrides", {
       schema: "org.gnome.mutter",
       overrides: {
         "center-new-windows": "true",
@@ -130,3 +94,27 @@ export default createVariant(
     });
   }
 );
+
+async function installPnpm(ctx: VariantCtx) {
+  const pnpmPath = "/usr/share/pnpm";
+  await $`mkdir -p pnpmPath`;
+
+  await ctx.downloadFile(
+    "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linux-x64",
+    `${pnpmPath}/pnpm`
+  );
+
+  await writeFile(
+    `${pnpmPath}/pnpx`,
+    ctx.trimLines(`
+        #!/bin/sh
+        exec pnpm dlx "$@"
+      `),
+    "utf-8"
+  );
+
+  await $`chmod +x ${pnpmPath}/pnpm`;
+  await $`chmod +x ${pnpmPath}/pnpx`;
+
+  await ctx.addToPath("pnpm", ["PNPM_HOME", pnpmPath]);
+}
