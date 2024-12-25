@@ -85,6 +85,9 @@ export default createVariant(
     // install PNPM
     await installPnpm(ctx);
 
+    // install SBP
+    await installPrompt(ctx);
+
     // overrides for GNOME
     await ctx.createGschemaOverride("gnome-desktop-overrides", {
       schema: "org.gnome.mutter",
@@ -117,4 +120,16 @@ async function installPnpm(ctx: VariantCtx) {
   await $`chmod +x ${pnpmPath}/pnpx`;
 
   await ctx.addToPath("pnpm", ["PNPM_HOME", pnpmPath]);
+}
+
+async function installPrompt(ctx: VariantCtx) {
+  const sbpPath = "/usr/share/sbp";
+  await ctx.cloneGitRepo("https://github.com/brujoand/sbp.git", sbpPath);
+  await ctx.createProfileScript(
+    "sbp",
+    `
+      export SBP_PATH=${sbpPath}
+      source \$SBP_PATH/sbp.bash
+    `
+  );
 }
