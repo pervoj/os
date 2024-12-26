@@ -1,5 +1,6 @@
 import { $ } from "bun";
-import { writeFile } from "fs/promises";
+import { readdir, writeFile } from "fs/promises";
+import { join } from "path";
 import { createVariant, type VariantCtx } from "~/utils/create-variant";
 
 export default createVariant(
@@ -82,6 +83,12 @@ export default createVariant(
       "firefoxpwa"
     );
 
+    // install Node
+    await installNode(ctx);
+
+    // install NPM
+    await installNpm(ctx);
+
     // install PNPM
     await installPnpm(ctx);
 
@@ -97,6 +104,60 @@ export default createVariant(
     });
   }
 );
+
+async function installNode(ctx: VariantCtx) {
+  const nodePath = "/usr/share/node";
+
+  type Res = { date: string; version: string }[];
+  const res = await fetch("https://nodejs.org/dist/index.json");
+  const data = (await res.json()) as Res;
+  const latest = data.sort((a, b) => b.date.localeCompare(a.date)).shift()!;
+  const version = latest.version;
+
+  const url = `https://nodejs.org/dist/${version}/node-${version}-linux-x64.tar.xz`;
+  const fileName = join(ctx.getTempDir("node", "archive"), "node.tar.xz");
+  await ctx.downloadFile(url, fileName);
+
+  const unzipPath = ctx.getTempDir("node", "contents");
+  await $`tar -xJf ${fileName} -C ${unzipPath}`;
+  await $`mv ${unzipPath} ${nodePath}`;
+
+  const binFiles = (await readdir(join(nodePath, "bin")))
+    .filter((f) => f != "node")
+    .map((f) => join(nodePath, "bin", f));
+
+  await $`rm ${binFiles}`;
+  await $`rm -r ${join(nodePath, "lib")}`;
+
+  await ctx.createProfileScript(
+    "node-home",
+    `export NODEJS_HOME="${nodePath}"`
+  );
+  await ctx.addToPath("node-bin", "$NODEJS_HOME/bin");
+}
+
+async function installNpm(ctx: VariantCtx) {
+  const npmPath = "/usr/share/npm";
+
+  type Res = { version: string; dist: { tarball: string } };
+  const res = await fetch("https://registry.npmjs.org/npm/latest");
+  const data = (await res.json()) as Res;
+  const url = data.dist.tarball;
+
+  const fileName = join(ctx.getTempDir("npm", "archive"), "npm.tgz");
+  await ctx.downloadFile(url, fileName);
+
+  const unzipPath = ctx.getTempDir("npm", "contents");
+  await $`tar -xzf ${fileName} -C ${unzipPath}`;
+  await $`mv ${unzipPath}/package ${npmPath}`;
+
+  await ctx.addToPath("npm", join(npmPath, "bin"), [
+    "NPM_HOME",
+    "$HOME/.npm-pkg",
+  ]);
+
+  await writeFile("/etc/npmrc", "prefix=${NPM_HOME}", "utf-8");
+}
 
 async function installPnpm(ctx: VariantCtx) {
   const pnpmPath = "/usr/share/pnpm";
