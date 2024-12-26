@@ -86,9 +86,6 @@ export default createVariant(
     // install Node
     await installNode(ctx);
 
-    // install NPM
-    await installNpm(ctx);
-
     // install PNPM
     await installPnpm(ctx);
 
