@@ -130,6 +130,9 @@ async function installNode(ctx: VariantCtx) {
     `export NODEJS_HOME="${nodePath}"`
   );
   await ctx.addToPath("node-bin", "$NODEJS_HOME/bin");
+
+  await ctx.addToPath("npm-pkg", ["NPM_HOME", "$HOME/.npm-pkg"]);
+  await writeFile("/etc/npmrc", "prefix=${NPM_HOME}", "utf-8");
 }
 
 async function installPnpm(ctx: VariantCtx) {
