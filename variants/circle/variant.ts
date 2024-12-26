@@ -128,41 +128,11 @@ async function installNode(ctx: VariantCtx) {
   const unzipContentPath = join(unzipPath, (await readdir(unzipPath))[0]);
   await $`mv ${unzipContentPath} ${nodePath}`;
 
-  const binFiles = (await readdir(join(nodePath, "bin")))
-    .filter((f) => f != "node")
-    .map((f) => join(nodePath, "bin", f));
-
-  await $`rm ${binFiles}`;
-  await $`rm -r ${join(nodePath, "lib")}`;
-
   await ctx.createProfileScript(
     "node-home",
     `export NODEJS_HOME="${nodePath}"`
   );
   await ctx.addToPath("node-bin", "$NODEJS_HOME/bin");
-}
-
-async function installNpm(ctx: VariantCtx) {
-  const npmPath = "/usr/share/npm";
-
-  type Res = { version: string; dist: { tarball: string } };
-  const res = await fetch("https://registry.npmjs.org/npm/latest");
-  const data = (await res.json()) as Res;
-  const url = data.dist.tarball;
-
-  const fileName = join(ctx.getTempDir("npm", "archive"), "npm.tgz");
-  await ctx.downloadFile(url, fileName);
-
-  const unzipPath = ctx.getTempDir("npm", "contents");
-  await $`tar -xzf ${fileName} -C ${unzipPath}`;
-  await $`mv ${unzipPath}/package ${npmPath}`;
-
-  await ctx.addToPath("npm", join(npmPath, "bin"), [
-    "NPM_HOME",
-    "$HOME/.npm-pkg",
-  ]);
-
-  await writeFile("/etc/npmrc", "prefix=${NPM_HOME}", "utf-8");
 }
 
 async function installPnpm(ctx: VariantCtx) {
