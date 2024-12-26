@@ -102,6 +102,11 @@ export default createVariant(
         "center-new-windows": "true",
       },
     });
+
+    /*
+      export VOLTA_HOME="{}"
+      export PATH="$VOLTA_HOME/bin:$PATH"
+    */
   }
 );
 
@@ -120,7 +125,8 @@ async function installNode(ctx: VariantCtx) {
 
   const unzipPath = ctx.getTempDir("node", "contents");
   await $`tar -xJf ${fileName} -C ${unzipPath}`;
-  await $`mv ${unzipPath} ${nodePath}`;
+  const unzipContentPath = join(unzipPath, (await readdir(unzipPath))[0]);
+  await $`mv ${unzipContentPath} ${nodePath}`;
 
   const binFiles = (await readdir(join(nodePath, "bin")))
     .filter((f) => f != "node")
