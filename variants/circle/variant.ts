@@ -1,5 +1,5 @@
 import { $ } from "bun";
-import { readdir, writeFile } from "fs/promises";
+import { mkdir, readdir, writeFile } from "fs/promises";
 import { join } from "path";
 import { createVariant, type VariantCtx } from "~/utils/create-variant";
 
@@ -131,8 +131,11 @@ async function installNode(ctx: VariantCtx) {
   );
   await ctx.addToPath("node-bin", "$NODEJS_HOME/bin");
 
+  const nodeEtcPath = join(nodePath, "etc");
+  const npmrcPath = join(nodeEtcPath, "npmrc");
   await ctx.addToPath("npm-pkg", ["NPM_HOME", "$HOME/.npm-pkg"]);
-  await writeFile("/etc/npmrc", "prefix=${NPM_HOME}", "utf-8");
+  await mkdir(nodeEtcPath, { recursive: true });
+  await writeFile(npmrcPath, "prefix=${NPM_HOME}", "utf-8");
 }
 
 async function installPnpm(ctx: VariantCtx) {
