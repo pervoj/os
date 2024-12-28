@@ -9,6 +9,7 @@ import { copyFiles } from "./copy-files";
 import { createGschemaOverride } from "./create-gschema-override";
 import { createProfileScript } from "./create-profile-script";
 import { downloadFile } from "./download-file";
+import { listFiles } from "./list-files";
 import { installPackages, uninstallPackages } from "./packages";
 import {
   addRepositoryFromFile,
@@ -37,6 +38,7 @@ export async function getVariantCtx(baseDirectory: string) {
     getAddToPathSnippetForSinglePath,
     getTempDir,
     installPackages,
+    listFiles,
     trimLines,
     uninstallPackages,
   };

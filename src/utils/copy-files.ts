@@ -1,10 +1,10 @@
 import { $ } from "bun";
-import { readdir } from "fs/promises";
-import { join } from "path";
+import { listFiles } from "./list-files";
 
 export async function copyFiles(parentDir: string, targetDir = "/") {
   console.log(`Copying files: ${parentDir} -> ${targetDir}`);
-  const files = (await readdir(parentDir)).map((f) => join(parentDir, f));
+  const files = await listFiles(parentDir);
+  if (!files.length) return;
   await $`mkdir -p ${targetDir}`;
   await $`cp -r ${files} ${targetDir}`;
 }

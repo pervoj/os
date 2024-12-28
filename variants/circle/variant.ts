@@ -42,9 +42,14 @@ export default createVariant(
       "https://packages.microsoft.com/yumrepos/vscode/config.repo"
     );
 
-    await ctx.installPackages(
+    const rpms = await ctx.listFiles(
+      join(ctx.baseDirectory, "packages"),
+      (file) => file.endsWith(".rpm")
+    );
+
+    const packages = [
       // embeded
-      join(ctx.baseDirectory, "packages", "*.rpm"),
+      ...rpms,
 
       // drivers
       "intel-media-driver",
@@ -86,8 +91,10 @@ export default createVariant(
       "code",
 
       // Firefox PWA
-      "firefoxpwa"
-    );
+      "firefoxpwa",
+    ];
+
+    await ctx.installPackages(...packages);
 
     // install Node
     await installNode(ctx);
