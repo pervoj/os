@@ -1,7 +1,8 @@
-import { $ } from "bun";
-import { mkdir, readdir, writeFile } from "fs/promises";
 import { join } from "path";
-import { createVariant, type VariantCtx } from "~/utils/create-variant";
+import { createVariant } from "~/utils/create-variant";
+import { installNode } from "./scripts/node";
+import { installPnpm } from "./scripts/pnpm";
+import { installPrompt } from "./scripts/prompt";
 
 export default createVariant(
   {
@@ -106,71 +107,3 @@ export default createVariant(
     });
   }
 );
-
-async function installNode(ctx: VariantCtx) {
-  const nodePath = "/usr/share/node";
-
-  type Res = { date: string; version: string }[];
-  const res = await fetch("https://nodejs.org/dist/index.json");
-  const data = (await res.json()) as Res;
-  const latest = data.sort((a, b) => b.date.localeCompare(a.date)).shift()!;
-  const version = latest.version;
-
-  const url = `https://nodejs.org/dist/${version}/node-${version}-linux-x64.tar.xz`;
-  const fileName = join(ctx.getTempDir("node", "archive"), "node.tar.xz");
-  await ctx.downloadFile(url, fileName);
-
-  const unzipPath = ctx.getTempDir("node", "contents");
-  await $`tar -xJf ${fileName} -C ${unzipPath}`;
-  const unzipContentPath = join(unzipPath, (await readdir(unzipPath))[0]);
-  await $`mv ${unzipContentPath} ${nodePath}`;
-
-  await ctx.createProfileScript(
-    "node-home",
-    `export NODEJS_HOME="${nodePath}"`
-  );
-  await ctx.addToPath("node-bin", "$NODEJS_HOME/bin");
-
-  const nodeEtcPath = join(nodePath, "etc");
-  const npmrcPath = join(nodeEtcPath, "npmrc");
-  await ctx.addToPath("npm-pkg", ["NPM_HOME", "$HOME/.npm-pkg"]);
-  await mkdir(nodeEtcPath, { recursive: true });
-  await writeFile(npmrcPath, "prefix=${NPM_HOME}", "utf-8");
-}
-
-async function installPnpm(ctx: VariantCtx) {
-  const pnpmPath = "/usr/share/pnpm";
-  await $`mkdir -p pnpmPath`;
-
-  await ctx.downloadFile(
-    "https://github.com/pnpm/pnpm/releases/latest/download/pnpm-linux-x64",
-    `${pnpmPath}/pnpm`
-  );
-
-  await writeFile(
-    `${pnpmPath}/pnpx`,
-    ctx.trimLines(`
-        #!/bin/sh
-        exec pnpm dlx "$@"
-      `),
-    "utf-8"
-  );
-
-  await $`chmod +x ${pnpmPath}/pnpm`;
-  await $`chmod +x ${pnpmPath}/pnpx`;
-
-  await ctx.addToPath("pnpm-bin", pnpmPath);
-  await ctx.createProfileScript("pnpm-home", 'export PNPM_HOME="$HOME/.pnpm"');
-}
-
-async function installPrompt(ctx: VariantCtx) {
-  const sbpPath = "/usr/share/sbp";
-  await ctx.cloneGitRepo("https://github.com/brujoand/sbp.git", sbpPath);
-  await ctx.createProfileScript(
-    "sbp",
-    `
-      export SBP_PATH=${sbpPath}
-      source \$SBP_PATH/sbp.bash
-    `
-  );
-}
