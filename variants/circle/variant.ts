@@ -12,6 +12,8 @@ export default createVariant(
     baseDirectory: __dirname,
   },
   async (ctx) => {
+    await ctx.copyFiles(join(ctx.baseDirectory, "files"));
+
     await ctx.installPackages(
       `https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-${ctx.fedoraVersion}.noarch.rpm`,
       `https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-${ctx.fedoraVersion}.noarch.rpm`
@@ -40,6 +42,9 @@ export default createVariant(
     );
 
     await ctx.installPackages(
+      // embeded
+      join(ctx.baseDirectory, "packages", "*.rpm"),
+
       // drivers
       "intel-media-driver",
       "mesa-vulkan-drivers",
@@ -99,11 +104,6 @@ export default createVariant(
         "center-new-windows": "true",
       },
     });
-
-    /*
-      export VOLTA_HOME="{}"
-      export PATH="$VOLTA_HOME/bin:$PATH"
-    */
   }
 );
 

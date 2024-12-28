@@ -5,6 +5,7 @@ import {
   getAddToPathSnippetForSinglePath,
 } from "./add-to-path";
 import { cloneGitRepo } from "./clone-git-repo";
+import { copyFiles } from "./copy-files";
 import { createGschemaOverride } from "./create-gschema-override";
 import { createProfileScript } from "./create-profile-script";
 import { downloadFile } from "./download-file";
@@ -27,6 +28,7 @@ export async function getVariantCtx(baseDirectory: string) {
     addToPath,
     baseDirectory,
     cloneGitRepo,
+    copyFiles,
     createGschemaOverride,
     createProfileScript,
     downloadFile,
