@@ -66,6 +66,7 @@ export default createVariant(
       "lame",
 
       // misc packages
+      "grubby",
       "langpacks-cs",
       "gnome-tweaks",
       "firewall-config",
