@@ -1,3 +1,4 @@
+import { $ } from "bun";
 import { join } from "path";
 import { createVariant } from "~/utils/create-variant";
 import { installNode } from "./scripts/node";
@@ -113,5 +114,8 @@ export default createVariant(
         "center-new-windows": "true",
       },
     });
+
+    // enable services
+    await $`systemctl enable docker`;
   }
 );
