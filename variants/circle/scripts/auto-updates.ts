@@ -13,6 +13,5 @@ export async function enableAutoUpdates(configValue: ConfigOptions = "stage") {
   );
   await writeFile(configFile, updatedContent, "utf-8");
 
-  await $`systemctl restart rpm-ostreed`;
-  await $`systemctl enable rpm-ostreed-automatic.timer --now`;
+  await $`systemctl enable rpm-ostreed-automatic.timer`;
 }
