@@ -22,6 +22,5 @@ export async function installPnpm(ctx: VariantCtx) {
   await $`chmod +x ${pnpmPath}/pnpm`;
   await $`chmod +x ${pnpmPath}/pnpx`;
 
-  await ctx.addToPath("pnpm-bin", pnpmPath);
-  await ctx.createProfileScript("pnpm-home", 'export PNPM_HOME="$HOME/.pnpm"');
+  await ctx.addToPath("pnpm", pnpmPath, ["PNPM_HOME", "$HOME/.pnpm"]);
 }

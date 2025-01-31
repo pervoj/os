@@ -29,7 +29,11 @@ export async function installNode(ctx: VariantCtx) {
 
   const nodeEtcPath = join(nodePath, "etc");
   const npmrcPath = join(nodeEtcPath, "npmrc");
-  await ctx.addToPath("npm-pkg", ["NPM_HOME", "$HOME/.npm-pkg"]);
+  await ctx.addToPath(
+    "npm-pkg",
+    ["NPM_HOME", "$HOME/.npm-pkg"],
+    ["NPM_HOME_BIN", "$NPM_HOME/bin"]
+  );
   await mkdir(nodeEtcPath, { recursive: true });
   await writeFile(npmrcPath, "prefix=${NPM_HOME}", "utf-8");
 }
