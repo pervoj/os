@@ -1,6 +1,7 @@
 import { $ } from "bun";
 import { join } from "path";
 import { createVariant } from "~/utils/create-variant";
+import { enableAutoUpdates } from "./scripts/auto-updates";
 import { installNode } from "./scripts/node";
 import { installPnpm } from "./scripts/pnpm";
 import { installPrompt } from "./scripts/prompt";
@@ -117,5 +118,8 @@ export default createVariant(
 
     // enable services
     await $`systemctl enable docker`;
+
+    // enable auto-updates
+    await enableAutoUpdates();
   }
 );
