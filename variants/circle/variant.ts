@@ -95,6 +95,9 @@ export default createVariant(
 
       // Firefox PWA
       "firefoxpwa",
+
+      // AWS CLI
+      "awscli",
     ];
 
     await ctx.installPackages(...packages);
