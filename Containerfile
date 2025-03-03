@@ -4,12 +4,14 @@ FROM quay.io/fedora-ostree-desktops/${BASE_IMAGE}
 ARG VARIANT_NAME
 
 COPY src/install-bun.sh /tmp/os-script/src/install-bun.sh
-RUN chmod +x /tmp/os-script/src/install-bun.sh; \
+RUN set -ouex pipefail; \
+    chmod +x /tmp/os-script/src/install-bun.sh; \
     /tmp/os-script/src/install-bun.sh; \
     ostree container commit;
 
 COPY . /tmp/os-script
-RUN mkdir -p /var/lib/alternatives; \
+RUN set -ouex pipefail; \
+    mkdir -p /var/lib/alternatives; \
     chmod +x /tmp/os-script/src/run-script.sh; \
     VARIANT_NAME=${VARIANT_NAME} /tmp/os-script/src/run-script.sh; \
     ostree container commit;
