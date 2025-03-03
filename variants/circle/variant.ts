@@ -121,7 +121,7 @@ export default createVariant(
     });
 
     // enable services
-    await $`systemctl enable docker`;
+    await $`systemctl enable docker logid`;
 
     // enable auto-updates
     await enableAutoUpdates();
