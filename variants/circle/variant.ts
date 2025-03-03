@@ -56,6 +56,7 @@ export default createVariant(
       // drivers
       "intel-media-driver",
       "mesa-vulkan-drivers",
+      "logiops",
 
       // codecs
       "gstreamer1-plugin-openh264",
