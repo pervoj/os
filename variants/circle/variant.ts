@@ -52,9 +52,6 @@ export default createVariant(
     );
 
     const packages = [
-      // embeded
-      ...rpms,
-
       // drivers
       "intel-media-driver",
       "mesa-vulkan-drivers",
@@ -78,6 +75,7 @@ export default createVariant(
       "nautilus-python",
       "steam-devices",
       "twitter-twemoji-fonts",
+      "chkconfig",
 
       // Docker
       "docker-ce",
@@ -102,6 +100,9 @@ export default createVariant(
 
       // AWS CLI
       "awscli",
+
+      // embeded
+      ...rpms,
     ];
 
     await ctx.installPackages(...packages);
