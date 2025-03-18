@@ -44,6 +44,8 @@ export default createVariant(
       "https://packages.microsoft.com/yumrepos/vscode/config.repo"
     );
 
+    await ctx.addRepositoryFromCopr("matthaigh27/cursor");
+
     const rpms = await ctx.listFiles(
       join(ctx.baseDirectory, "packages"),
       (file) => file.endsWith(".rpm")
@@ -93,6 +95,7 @@ export default createVariant(
 
       // VS Code
       "code",
+      "cursor",
 
       // Firefox PWA
       "firefoxpwa",

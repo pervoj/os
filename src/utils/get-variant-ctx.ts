@@ -15,6 +15,7 @@ import {
   addRepositoryFromFile,
   addRepositoryFromString,
   addRepositoryFromUrl,
+  getAddRepositoryFromCoprFunction,
 } from "./repos";
 import { getTempDir } from "./temp";
 import { trimLines } from "./trim-lines";
@@ -26,6 +27,7 @@ export async function getVariantCtx(baseDirectory: string) {
     addRepositoryFromFile,
     addRepositoryFromString,
     addRepositoryFromUrl,
+    addRepositoryFromCopr: getAddRepositoryFromCoprFunction(fedoraVersion),
     addToPath,
     baseDirectory,
     cloneGitRepo,

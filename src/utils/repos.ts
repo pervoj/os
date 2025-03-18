@@ -32,3 +32,20 @@ export async function addRepositoryFromFile(
   console.log("Installing repository:", fileName);
   await $`install -o 0 -g 0 -m644 ${filePath} ${`/etc/yum.repos.d/${fileName}`}`;
 }
+
+export async function addRepositoryFromCopr(
+  copr: `${string}/${string}`,
+  fedoraVersion: string
+) {
+  const [org, repo] = copr.split("/");
+  console.log("Adding Copr repository:", org, repo);
+  await addRepositoryFromUrl(
+    `https://copr.fedorainfracloud.org/coprs/${org}/${repo}/repo/fedora-${fedoraVersion}/${org}-${repo}-fedora-${fedoraVersion}.repo`
+  );
+}
+
+export function getAddRepositoryFromCoprFunction(fedoraVersion: string) {
+  return (copr: `${string}/${string}`) => {
+    return addRepositoryFromCopr(copr, fedoraVersion);
+  };
+}
