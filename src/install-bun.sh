@@ -27,4 +27,8 @@ unzip -qod "$TEMP_DIR" "$file_path"
 chmod +x "$bin_path"
 mv "$bin_path" "$out_path"
 
+bunx_path="${out_path}x"
+echo -e '#!/bin/sh\nexec bun x "$@"' > "$bunx_path"
+chmod +x "$bunx_path"
+
 BUN="$out_path"
