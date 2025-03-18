@@ -46,12 +46,7 @@ export default createVariant(
 
     await ctx.addRepositoryFromCopr("matthaigh27/cursor");
 
-    const rpms = await ctx.listFiles(
-      join(ctx.baseDirectory, "packages"),
-      (file) => file.endsWith(".rpm")
-    );
-
-    const packages = [
+    await ctx.installPackages(
       // drivers
       "intel-media-driver",
       "mesa-vulkan-drivers",
@@ -99,13 +94,14 @@ export default createVariant(
       "firefoxpwa",
 
       // AWS CLI
-      "awscli",
+      "awscli"
+    );
 
-      // embeded
-      ...rpms,
-    ];
-
-    await ctx.installPackages(...packages);
+    const rpms = await ctx.listFiles(
+      join(ctx.baseDirectory, "packages"),
+      (file) => file.endsWith(".rpm")
+    );
+    await ctx.installPackages(...rpms);
 
     // install Node
     await installNode(ctx);
